@@ -14,7 +14,7 @@ const saveToStorage = (key, data) => {
 };
 
 // Estado Inicial do Sistema (Lido do navegador ou zerado se for a primeira vez)
-let state = loadFromStorage('peladahub_state', {
+let state = loadFromStorage ('peladahub_state', {
     jogadores: [],
     timesSorteados: [],
     filaDeTimes: [],
