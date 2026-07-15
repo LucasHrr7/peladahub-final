@@ -1,9 +1,29 @@
-const P=[],T=[],$=x=>document.querySelector(x);let A=[],N=0,z=0,run=0,id,S=0,G=0;const C=['blue','yellow','red','green','white'],M=['⚡','★','◆','●','○'],msg=x=>{let e=$('#toast');e.textContent=x;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2200)},mix=x=>[...x].sort(()=>Math.random()-.5),ini=x=>x.split(' ').map(a=>a[0]).join('').slice(0,2);
-function vp(){$('#playersGrid').innerHTML=P.length?P.map(x=>`<article class="player"><span class="avatar">${ini(x)}</span><div class="player-info"><b>${x}</b><small>Disponível</small></div><button class="remove-player" data-x="${encodeURIComponent(x)}">×</button></article>`).join(''):'<p class="empty-state">Adicione jogadores para iniciar.</p>';$('#confirmedCount').textContent=P.length+' jogadores';$('#drawTeams').disabled=P.length<12||P.length%6!=0}
-function vt(){$('#queueList').innerHTML=T.length?T.map((t,i)=>`<article class="queue-item" style="grid-template-columns:30px 40px 1fr auto"><b class="queue-position">${i+1}</b><span class="team-emblem tiny ${t.c}">${t.m}</span><div class="queue-name"><b>${t.n}</b><small>Capitão: ${t.k} · 6 jogadores</small><span style="display:block;font-size:10px;margin-top:6px">${t.p.join(' · ')}</span></div><span class="queue-status">${A.includes(i)?'EM CAMPO':i==N?'PRÓXIMO':'AGUARDANDO'}</span></article>`).join(''):'<p class="empty-state queue-empty">Os times aparecerão aqui.</p>';$('#gamesPlayed').textContent=S;$('#goalsTotal').textContent=G;$('#teamsTotal').textContent=T.length}
-function field(a,b){A=[a,b];z=0;$('#scoreA').textContent=$('#scoreB').textContent=0;['A','B'].forEach((q,i)=>{$('#team'+q+'Name').textContent=T[A[i]].n;$('#team'+q+'Captain').textContent='Capitão: '+T[A[i]].k});$('#match-title').textContent='Partida pronta';$('#matchPlace').textContent=T[a].n+' × '+T[b].n;$('#matchTimer').textContent='00:00';$('#goalA').disabled=$('#goalB').disabled=$('#finishMatch').disabled=false;$('#roundStatus').textContent='Times em campo';vt()}
-function call(keep){if(T.length<2)return msg('Sorteie pelo menos dois times.');let a=keep??N,b=N;if(b==a)b=(b+1)%T.length;N=(b+1)%T.length;field(a,b);$('#callNext').animate([{transform:'scale(1)'},{transform:'scale(1.1)'},{transform:'scale(1)'}],{duration:450});msg(keep==null?'Próximos times chamados!':'Vencedor mantido em campo!')}
-function draw(){T.length=0;mix(P).forEach((x,i)=>{let n=i/6|0;(T[n]??={p:[],k:x,n:'Time do '+x.split(' ')[0],c:C[n%5],m:M[n%5]}).p.push(x)});S=G=N=0;$('#results').innerHTML='<p class="empty-state">Os resultados aparecerão aqui.</p>';call();vp();msg(T.length+' times sorteados.')}
-function clock(){if(!A.length)return msg('Chame os times primeiro.');run=!run;$('#timerToggle').textContent=run?'❚❚ Pausar cronômetro':'▶ Iniciar cronômetro';run?id=setInterval(()=>{$('#matchTimer').textContent=String(++z/60|0).padStart(2,'0')+':'+String(z%60).padStart(2,'0')},1000):clearInterval(id)}
-function end(){let x=+$('#scoreA').textContent,y=+$('#scoreB').textContent;if(!A.length)return;let tie=x==y,w=x>y?A[0]:A[1],text=tie?'Empate: os dois times saem e os próximos entram.':`Vitória do ${T[w].n}: o time continua em campo.`;if(!confirm('Confirmar encerramento?\n\n'+text))return;clearInterval(id);run=0;$('#timerToggle').textContent='▶ Iniciar cronômetro';S++;G+=x+y;$('#results .empty-state')?.remove();$('#results').insertAdjacentHTML('afterbegin',`<div><b>${T[A[0]].k}</b><strong>${x}</strong><em>×</em><strong>${y}</strong><b>${T[A[1]].k}</b></div>`);tie?call():call(w);msg(text)}
-$('#addPlayer').onclick=()=>$('#playerDialog').showModal();$('#playerForm').onsubmit=e=>{let x=new FormData(e.target).get('player').trim();if(P.includes(x))return e.preventDefault();P.push(x);e.target.reset();vp()};$('#playersGrid').onclick=e=>{let b=e.target.closest('.remove-player');if(b){P.splice(P.indexOf(decodeURIComponent(b.dataset.x)),1);vp()}};$('#drawTeams').onclick=draw;$('#goalA').onclick=()=>$('#scoreA').textContent=+$('#scoreA').textContent+1;$('#goalB').onclick=()=>$('#scoreB').textContent=+$('#scoreB').textContent+1;$('#finishMatch').onclick=end;$('#menuButton').onclick=()=>$('.sidebar').classList.toggle('open');document.querySelector('.match-actions').insertAdjacentHTML('afterend','<div style="display:flex;justify-content:center;gap:10px;margin-top:13px"><button class="outline-button" id="timerToggle">▶ Iniciar cronômetro</button><button class="outline-button" id="callNext">Chamar próximos times</button></div>');$('#timerToggle').onclick=clock;$('#callNext').onclick=()=>call();vp();vt();
+const playersGrid = document.getElementById('playersGrid');
+const addPlayerBtn = document.getElementById('addPlayer');
+const playerDialog = document.getElementById('playerDialog');
+const playerForm = document.getElementById('playerForm');
+let jogadores = JSON.parse(localStorage.getItem('jogadores')) || [];
+
+function atualizarTela() {
+    playersGrid.innerHTML = '';
+    jogadores.forEach((nome, index) => {
+        const div = document.createElement('div');
+        div.className = 'card-jogador';
+        div.innerHTML = `<span>${nome}</span>`;
+        playersGrid.appendChild(div);
+    });
+    document.getElementById('confirmedCount').innerText = `${jogadores.length} jogadores`;
+    localStorage.setItem('jogadores', JSON.stringify(jogadores));
+}
+
+addPlayerBtn.addEventListener('click', () => playerDialog.showModal());
+
+playerForm.addEventListener('submit', (e) => {
+    const nome = playerForm.player.value;
+    jogadores.push(nome);
+    atualizarTela();
+    playerForm.reset();
+});
+
+// Inicializa
+atualizarTela();
