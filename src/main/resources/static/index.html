@@ -3,66 +3,184 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b7a45">
   <title>PeladaHub | Gestão de futebol</title>
-  <style>
-    /* CSS EMBUTIDO PARA GARANTIR CARREGAMENTO */
-    body { font-family: 'DM Sans', sans-serif; margin: 0; background-color: #f4f4f4; color: #333; }
-    .app-shell { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
-    .sidebar { background: #fff; border-right: 1px solid #ddd; padding: 20px; }
-    .content-grid { display: grid; grid-template-columns: 1fr 350px; gap: 2rem; padding: 2rem; }
-    .card-jogador { background: white; padding: 1rem; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 10px; }
-    @media (max-width: 768px) {
-        .app-shell { grid-template-columns: 1fr; }
-        .sidebar { display: none; }
-        .content-grid { grid-template-columns: 1fr; }
-    }
-  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="enhancements.css?v=1.2">
 </head>
 <body>
-  <div class="app-shell">
-    <aside class="sidebar">
-      <h2>PeladaHub</h2>
-      <nav>
-        <a href="#inicio">Início</a><br>
-        <a href="#jogadores">Jogadores</a>
+  <div class= "app-shell">
+    <aside class="sidebar" aria-label="Navegação principal">
+      <a class="brand" href="#inicio">
+        <span class="brand-mark">⚽</span><span>Pelada<span>Hub</span></span>
+      </a>
+      
+      <nav class="nav-links">
+        <a class="active" href="#inicio"><span>⌂</span> Início</a>
+        <a href="#times"><span>♟</span> Times</a>
+        <a href="#jogadores"><span>♙</span> Jogadores</a>
+        <a href="#historico"><span>◷</span> Histórico</a>
       </nav>
+
+      <!-- BOTÃO DE RESETAR PELADA INTEGRADO -->
+      <div style="padding: 0 1rem; margin-top: 1rem;">
+        <button id="resetAppButton" class="outline-button" style="width: 100%; border-color: #ff4d4d; color: #ff4d4d; justify-content: center; display: flex; gap: 8px;" type="button">
+          <span>🧹</span> Resetar Pelada
+        </button>
+      </div>
+
+      <div class="sidebar-bottom">
+        <button class="club-card" type="button">
+          <span class="avatar mini">PH</span>
+          <span><b>Minha rodada</b><small>Organizador</small></span>
+          <span>⌄</span>
+        </button>
+        <button class="plain-button" type="button">⚙ Configurações</button>
+      </div>
     </aside>
-    <main class="content-grid">
-      <section>
-        <h1>Central da rodada</h1>
-        <div id="playersGrid"></div>
-        <button id="addPlayer">+ Adicionar jogador</button>
+
+    <main>
+      <header class="topbar" id="inicio">
+        <button class="menu-button" id="menuButton" aria-label="Abrir menu">☰</button>
+        <div>
+          <p class="eyebrow">GESTÃO DE PARTIDAS</p>
+          <h1>Central da rodada</h1>
+        </div>
+        <div class="header-actions">
+          <button class="notification" aria-label="Notificações">♢<i></i></button>
+          <span class="avatar">PH</span>
+        </div>
+      </header>
+
+      <section class="content-grid">
+        <div class="primary-column">
+          <section class="match-card" aria-labelledby="match-title">
+            <div class="match-top">
+              <span class="live-pill"><i></i> AO VIVO</span>
+              <button class="icon-button" aria-label="Mais opções">•••</button>
+            </div>
+            <p class="match-place" id="matchPlace">Nenhuma partida em andamento</p>
+            <h2 id="match-title">Aguardando sorteio</h2>
+            
+            <div class="scoreboard">
+              <div class="team current">
+                <div class="team-emblem blue">?</div>
+                <b id="teamAName">Time A</b>
+                <small id="teamACaptain">Aguardando</small>
+              </div>
+              <div class="score">
+                <strong id="scoreA">0</strong>
+                <span>:</span>
+                <strong id="scoreB">0</strong>
+                <small id="matchTimer">00:00</small>
+              </div>
+              <div class="team current">
+                <div class="team-emblem yellow">?</div>
+                <b id="teamBName">Time B</b>
+                <small id="teamBCaptain">Aguardando</small>
+              </div>
+            </div>
+
+            <div class="match-actions">
+              <button class="outline-button" id="goalA" disabled>+ Gol Time A</button>
+              <button class="dark-button" id="finishMatch" disabled>Encerrar partida</button>
+              <button class="outline-button" id="goalB" disabled>+ Gol Time B</button>
+            </div>
+          </section>
+
+          <section class="section-block" id="times">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">ORGANIZAÇÃO DA RODADA</p>
+                <h2>Próximos times na fila</h2>
+              </div>
+              <span class="queue-hint">Formada pelo sorteio</span>
+            </div>
+            <div class="queue-list" id="queueList"></div>
+          </section>
+
+          <section class="section-block" id="jogadores">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">PRESENÇA</p>
+                <h2>Jogadores disponíveis <span class="count-pill" id="confirmedCount">0 jogadores</span></h2>
+              </div>
+              <button class="text-button" id="addPlayer">+ Adicionar jogador</button>
+            </div>
+            <div class="players-grid" id="playersGrid"></div>
+            <div class="draw-panel">
+              <div>
+                <b>Sorteio de equipes</b>
+                <small>São necessários grupos completos de 6 jogadores.</small>
+              </div>
+              <button class="dark-button" id="drawTeams" disabled>Sortear times</button>
+            </div>
+          </section>
+        </div>
+
+        <aside class="right-column">
+          <section class="info-card">
+            <div class="info-icon">◷</div>
+            <div>
+              <p>Status da rodada</p>
+              <b id="roundStatus">Monte os times</b>
+              <small id="roundDetail">Adicione jogadores para começar</small>
+            </div>
+          </section>
+
+          <section class="side-card">
+            <div class="side-heading">
+              <h2>Resumo da rodada</h2>
+              <button class="icon-button">•••</button>
+            </div>
+            <div class="summary-row">
+              <span>Jogos disputados</span>
+              <b id="gamesPlayed">0</b>
+            </div>
+            <div class="progress">
+              <i id="progressBar"></i>
+            </div>
+            <div class="summary-row">
+              <span>Gols marcados</span>
+              <b id="goalsTotal">0</b>
+            </div>
+            <div class="summary-row">
+              <span>Equipes sorteadas</span>
+              <b id="teamsTotal">0</b>
+            </div>
+          </section>
+
+          <section class="side-card" id="historico">
+            <div class="side-heading">
+              <h2>Últimos resultados</h2>
+            </div>
+            <div class="results" id="results">
+              <p class="empty-state">Os resultados aparecerão aqui quando uma partida terminar.</p>
+            </div>
+          </section>
+        </aside>
       </section>
     </main>
   </div>
 
   <dialog id="playerDialog">
     <form method="dialog" id="playerForm">
+      <button class="close" value="cancel" aria-label="Fechar">×</button>
+      <p class="eyebrow">PRESENÇA</p>
       <h2>Adicionar jogador</h2>
-      <input name="player" required placeholder="Nome do jogador">
-      <button type="submit">Confirmar</button>
+      <label>
+        Nome do jogador
+        <input name="player" required maxlength="40" placeholder="Ex.: Leonardo Santos" autofocus>
+      </label>
+      <button class="dark-button" value="default">Confirmar jogador</button>
     </form>
   </dialog>
 
-  <script>
-    // LÓGICA INTEGRADA
-    const playersGrid = document.getElementById('playersGrid');
-    const playerDialog = document.getElementById('playerDialog');
-    const playerForm = document.getElementById('playerForm');
-    let jogadores = JSON.parse(localStorage.getItem('jogadores')) || [];
-
-    function renderizar() {
-        playersGrid.innerHTML = jogadores.map(n => `<div class="card-jogador">${n}</div>`).join('');
-    }
-
-    document.getElementById('addPlayer').onclick = () => playerDialog.showModal();
-    playerForm.onsubmit = (e) => {
-        jogadores.push(playerForm.player.value);
-        localStorage.setItem('jogadores', JSON.stringify(jogadores));
-        renderizar();
-        playerForm.reset();
-    };
-    renderizar();
-  </script>
+  <div class="toast" id="toast" role="status"></div>
+  
+  <script src="app.js?v=1.1"></script>
 </body>
 </html>
