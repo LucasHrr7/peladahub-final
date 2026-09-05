@@ -1,27 +1,49 @@
-# PeladaHub
 
-Aplicação Java sem Spring para organizar rodadas de futebol. O servidor entrega o site e salva o estado da rodada no MySQL.
+# ⚽ PeladaHub
 
-## Rodar localmente
+Sistema para facilitar a organização de partidas de futebol entre amigos.
 
-Defina as variáveis de ambiente e execute com Docker (não exige Maven instalado):
+O **PeladaHub** permite cadastrar jogadores, criar partidas, controlar confirmações de presença e realizar o sorteio dos times.
 
-```powershell
-$env:DB_URL='jdbc:mysql://HOST:3306/pelada_db?useSSL=true&serverTimezone=UTC'
-$env:DB_USER='USUARIO'
-$env:DB_PASSWORD='SENHA'
-docker build -t peladahub .
-docker run -p 8080:8080 --env DB_URL --env DB_USER --env DB_PASSWORD peladahub
+## 🚀 Funcionalidades
+
+* 🏟️ Criar, listar e excluir partidas
+* 👤 Cadastrar e listar jogadores
+* ✅ Confirmar e cancelar presença
+* 📋 Listar jogadores confirmados
+* ⚽ Sorteio automático dos times
+
+## 🛠️ Tecnologias
+
+* Java 17
+* MySQL
+* JDBC
+* Maven
+* HTML, CSS e Bootstrap
+* Git e GitHub
+
+## 🏗️ Estrutura
+
+O projeto utiliza uma separação por responsabilidades:
+
+```text
+com.peladahub/
+├── connection/
+├── dao/
+└── model/
 ```
 
-Abra `http://localhost:8080`. A tabela `rodada_estado` é criada automaticamente.
+O **DAO** é responsável pelo acesso ao banco de dados, enquanto `model` representa as entidades do sistema.
 
-## Hospedar no Render
 
-1. Suba este diretório para um repositório GitHub privado ou público.
-2. Crie um banco MySQL externo e copie sua URL de conexão JDBC.
-3. No Render, crie um serviço a partir do repositório; o arquivo `render.yaml` detecta o Dockerfile.
-4. Cadastre `DB_URL`, `DB_USER` e `DB_PASSWORD` nas variáveis do serviço.
-5. Publique e use a URL gerada no celular.
 
-Nunca salve senha de banco no Git ou no código.
+## 🎯 Objetivo
+
+Projeto desenvolvido para praticar **Java, POO, SQL, JDBC, CRUD, banco de dados e organização de sistemas**, além de servir como projeto de portfólio.
+
+## 👨‍💻 Autor
+
+**Lucas Henrique Rodrigues Rabelo**
+
+
+
